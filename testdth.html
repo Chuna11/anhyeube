@@ -13,18 +13,13 @@
             align-items: center;
             height: 100vh;
             background-color: #f0f0f0;
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
+            background-image: url('https://i.pinimg.com/originals/cf/88/99/cf889965c8db4cace0467ba17cbab3f6.gif'); /* Link đến ảnh GIF */
+            background-size: cover; /* Giúp ảnh nền bao phủ toàn bộ màn hình */
+            background-position: center; /* Căn giữa ảnh nền */
+            background-repeat: no-repeat; /* Không lặp lại ảnh nền */
             font-family: Arial, sans-serif;
-            font-size: 24px;
             color: #333;
         }
-
-        .message {
-            display: none;
-        }
-
         canvas {
             display: block;
         }
@@ -40,13 +35,27 @@
             width: 300px;
             height: auto;
         }
+
+        /* Ẩn nội dung 3D trên điện thoại */
+        .content, .message {
+            display: none;
+        }
+
+        /* Thiết lập hiển thị thông báo */
+        .message {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ff0000;
+        }
     </style>
 </head>
 <body>
+    <!-- Thông báo hiển thị khi người dùng sử dụng điện thoại -->
+    <div class="message">Hãy mở máy tính để xem nhaaa :))) || from: ChuNa with love</div>
 
-    <div class="message">Hãy mở máy tính để xem :))</div>
-
+    <!-- Nội dung 3D -->
     <div class="content">
+        <!-- Ảnh GIF bên cạnh trái tim -->
         <div class="gif-container">
             <img src="https://i.pinimg.com/originals/72/dc/2f/72dc2f3b9e357e19438cc94b9bad93f5.gif" alt="xem bằng đth sao thấy được baaaa">
         </div>
@@ -63,40 +72,51 @@
             document.querySelector('.content').style.display = 'none';
             document.querySelector('.message').style.display = 'block';
         } else {
-            // Nếu là trên màn hình máy tính, hiển thị nội dung bình thường
+            // Hiển thị nội dung 3D khi trên máy tính
+            document.querySelector('.content').style.display = 'block';
+            document.querySelector('.message').style.display = 'none';
+
+            // Khởi tạo cảnh, camera và renderer (thêm alpha: true để có nền trong suốt)
             const scene = new THREE.Scene();
             const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            const renderer = new THREE.WebGLRenderer({ alpha: true });
-            renderer.setClearColor(0x000000, 0);
+            const renderer = new THREE.WebGLRenderer({ alpha: true }); // Nền trong suốt
+            renderer.setClearColor(0x000000, 0); // Đặt màu nền thành trong suốt
             renderer.setSize(window.innerWidth, window.innerHeight);
             document.body.appendChild(renderer.domElement);
 
+            // Tạo hình dáng trái tim 3D
             const heartShape = new THREE.Shape();
-            heartShape.moveTo(0, -1);
-            heartShape.bezierCurveTo(-1.5, -1, -1.5, 1.5, 0, 0.4);
-            heartShape.bezierCurveTo(1.5, 1.5, 1.5, -1, 0, -1);
 
+            // Vẽ trái tim chính xác bằng cách sử dụng đường cong Bezier
+            heartShape.moveTo(0, -1); // Điểm dưới đáy trái tim
+            heartShape.bezierCurveTo(-1.5, -1, -1.5, 1.5, 0, 0.4);  // Nửa trái của trái tim
+            heartShape.bezierCurveTo(1.5, 1.5, 1.5, -1, 0, -1);  // Nửa phải của trái tim
+
+            // Tạo hình khối 3D trái tim
             const extrudeSettings = {
-                depth: 0.3,
-                bevelEnabled: true,
-                bevelSegments: 10,
-                steps: 2,
-                bevelSize: 0.2,
-                bevelThickness: 0.2
+                depth: 0.3, // Độ sâu của trái tim
+                bevelEnabled: true, // Bo tròn cạnh
+                bevelSegments: 10,   // Độ mịn của các góc bo tròn
+                steps: 2,            // Số lớp dọc theo độ sâu
+                bevelSize: 0.2,      // Độ rộng của vùng bo tròn
+                bevelThickness: 0.2  // Độ cao của phần lồi
             };
             const geometry = new THREE.ExtrudeGeometry(heartShape, extrudeSettings);
 
+            // Tạo chất liệu cho trái tim
             const material = new THREE.MeshPhongMaterial({ color: 0xff0000, shininess: 100 });
             const heartMesh = new THREE.Mesh(geometry, material);
             scene.add(heartMesh);
 
+            // Thêm đèn chiếu sáng
             const pointLight = new THREE.PointLight(0xffffff, 1);
             pointLight.position.set(5, 5, 5);
             scene.add(pointLight);
 
-            const ambientLight = new THREE.AmbientLight(0x404040);
+            const ambientLight = new THREE.AmbientLight(0x404040); // Ánh sáng môi trường
             scene.add(ambientLight);
 
+            // Tải font và tạo chữ 3D "Chunn"
             const loader = new THREE.FontLoader();
             loader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', function(font) {
                 const textGeometryChunn = new THREE.TextGeometry('Chunn', {
@@ -112,10 +132,13 @@
 
                 const textMaterialChunn = new THREE.MeshPhongMaterial({ color: 0x00ff00 });
                 const textMeshChunn = new THREE.Mesh(textGeometryChunn, textMaterialChunn);
+
+                // Đặt vị trí của chữ "Chunn" bên trái trái tim
                 textMeshChunn.position.set(-3.5, 0, 0);
                 scene.add(textMeshChunn);
             });
 
+            // Tải font và tạo chữ 3D "Thư"
             loader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', function(font) {
                 const textGeometryThu = new THREE.TextGeometry('Thu', {
                     font: font,
@@ -128,21 +151,29 @@
                     bevelSegments: 8
                 });
 
-                const textMaterialThu = new THREE.MeshPhongMaterial({ color: 0x8A2BE2 });
+                const textMaterialThu = new THREE.MeshPhongMaterial({ color: 0x8A2BE2 }); // Màu tím pha xanh dương
                 const textMeshThu = new THREE.Mesh(textGeometryThu, textMaterialThu);
-                textMeshThu.position.set(2, 0, 0);
+
+                // Đặt vị trí của chữ "Thư" bên phải trái tim
+                textMeshThu.position.set(2, 0, 0); // Điều chỉnh tọa độ X để nằm bên phải trái tim
                 scene.add(textMeshThu);
             });
 
+            // Đặt vị trí cho camera
             camera.position.z = 3;
 
+            // Tạo hàm animate để render cảnh liên tục
             function animate() {
                 requestAnimationFrame(animate);
+                
+                // Quay quanh trục y
                 heartMesh.rotation.y += 0.006;
+
                 renderer.render(scene, camera);
             }
             animate();
 
+            // Điều chỉnh kích thước canvas khi thay đổi kích thước cửa sổ
             window.addEventListener('resize', () => {
                 const width = window.innerWidth;
                 const height = window.innerHeight;
