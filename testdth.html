@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tim mệt xỉu 👀</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            font-family: Arial, sans-serif;
+            font-size: 24px;
+            color: #333;
+        }
+
+        .message {
+            display: none;
+        }
+
+        canvas {
+            display: block;
+        }
+
+        /* Đặt vị trí cho ảnh GIF ở góc dưới bên trái */
+        .gif-container {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+        }
+
+        .gif-container img {
+            width: 300px;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="message">Hãy mở máy tính để xem :))</div>
+
+    <div class="content">
+        <div class="gif-container">
+            <img src="https://i.pinimg.com/originals/72/dc/2f/72dc2f3b9e357e19438cc94b9bad93f5.gif" alt="xem bằng đth sao thấy được baaaa">
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/110/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/110/examples/js/loaders/FontLoader.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/110/examples/js/geometries/TextGeometry.js"></script>
+
+    <script>
+        // Kiểm tra nếu màn hình có chiều rộng dưới 768px (điện thoại)
+        if (window.innerWidth < 768) {
+            // Ẩn nội dung 3D và hiển thị thông báo
+            document.querySelector('.content').style.display = 'none';
+            document.querySelector('.message').style.display = 'block';
+        } else {
+            // Nếu là trên màn hình máy tính, hiển thị nội dung bình thường
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ alpha: true });
+            renderer.setClearColor(0x000000, 0);
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.body.appendChild(renderer.domElement);
+
+            const heartShape = new THREE.Shape();
+            heartShape.moveTo(0, -1);
+            heartShape.bezierCurveTo(-1.5, -1, -1.5, 1.5, 0, 0.4);
+            heartShape.bezierCurveTo(1.5, 1.5, 1.5, -1, 0, -1);
+
+            const extrudeSettings = {
+                depth: 0.3,
+                bevelEnabled: true,
+                bevelSegments: 10,
+                steps: 2,
+                bevelSize: 0.2,
+                bevelThickness: 0.2
+            };
+            const geometry = new THREE.ExtrudeGeometry(heartShape, extrudeSettings);
+
+            const material = new THREE.MeshPhongMaterial({ color: 0xff0000, shininess: 100 });
+            const heartMesh = new THREE.Mesh(geometry, material);
+            scene.add(heartMesh);
+
+            const pointLight = new THREE.PointLight(0xffffff, 1);
+            pointLight.position.set(5, 5, 5);
+            scene.add(pointLight);
+
+            const ambientLight = new THREE.AmbientLight(0x404040);
+            scene.add(ambientLight);
+
+            const loader = new THREE.FontLoader();
+            loader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', function(font) {
+                const textGeometryChunn = new THREE.TextGeometry('Chunn', {
+                    font: font,
+                    size: 0.5,
+                    height: 0.08,
+                    curveSegments: 10,
+                    bevelEnabled: true,
+                    bevelThickness: 0.0009,
+                    bevelSize: 0.03,
+                    bevelSegments: 7
+                });
+
+                const textMaterialChunn = new THREE.MeshPhongMaterial({ color: 0x00ff00 });
+                const textMeshChunn = new THREE.Mesh(textGeometryChunn, textMaterialChunn);
+                textMeshChunn.position.set(-3.5, 0, 0);
+                scene.add(textMeshChunn);
+            });
+
+            loader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', function(font) {
+                const textGeometryThu = new THREE.TextGeometry('Thu', {
+                    font: font,
+                    size: 0.5,
+                    height: 0.08,
+                    curveSegments: 10,
+                    bevelEnabled: true,
+                    bevelThickness: 0.001,
+                    bevelSize: 0.03,
+                    bevelSegments: 8
+                });
+
+                const textMaterialThu = new THREE.MeshPhongMaterial({ color: 0x8A2BE2 });
+                const textMeshThu = new THREE.Mesh(textGeometryThu, textMaterialThu);
+                textMeshThu.position.set(2, 0, 0);
+                scene.add(textMeshThu);
+            });
+
+            camera.position.z = 3;
+
+            function animate() {
+                requestAnimationFrame(animate);
+                heartMesh.rotation.y += 0.006;
+                renderer.render(scene, camera);
+            }
+            animate();
+
+            window.addEventListener('resize', () => {
+                const width = window.innerWidth;
+                const height = window.innerHeight;
+                renderer.setSize(width, height);
+                camera.aspect = width / height;
+                camera.updateProjectionMatrix();
+            });
+        }
+    </script>
+</body>
+</html>
